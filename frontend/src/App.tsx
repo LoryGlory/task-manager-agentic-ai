@@ -5,7 +5,7 @@
 import { CssBaseline, ThemeProvider, AppBar, Toolbar, Typography, Box } from '@mui/material';
 import TaskIcon from '@mui/icons-material/Assignment';
 import TaskList from './components/TaskList';
-import { theme } from './theme';
+import { theme } from './styles/theme';
 
 function App() {
   return (
