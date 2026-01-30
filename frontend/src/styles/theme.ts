@@ -5,12 +5,12 @@ export const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6366f1', // Modern indigo
+      main: '#a600ff', 
       light: '#818cf8',
       dark: '#4f46e5',
     },
     secondary: {
-      main: '#ec4899', // Modern pink
+      main: '#ec4899', 
       light: '#f472b6',
       dark: '#db2777',
     },

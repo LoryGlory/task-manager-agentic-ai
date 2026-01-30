@@ -70,10 +70,10 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
 
           <ActionsBox>
             <IconButton size="small" onClick={handleEdit} color="primary" aria-label="edit task">
-              <EditIcon fontSize="small" />
+              <EditIcon fontSize="small" sx={{ color: '#616161' }} />
             </IconButton>
             <IconButton size="small" onClick={handleDelete} color="error" aria-label="delete task">
-              <DeleteIcon fontSize="small" />
+              <DeleteIcon fontSize="small" sx={{ color: '#931621' }} />
             </IconButton>
           </ActionsBox>
         </CardHeader>
