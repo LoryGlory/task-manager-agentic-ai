@@ -1,0 +1,42 @@
+# Render Blueprint for Task Manager Application
+# https://render.com/docs/blueprint-spec
+
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: taskmanager-db
+    env: docker
+    plan: free
+    region: oregon
+    databaseName: taskmanager
+    databaseUser: taskuser
+    ipAllowList: [] # Allow all IPs (required for free tier)
+
+  # Spring Boot Backend
+  - type: web
+    name: taskmanager-backend
+    env: java
+    plan: free
+    region: oregon
+    buildCommand: cd backend && mvn clean package -DskipTests
+    startCommand: java -jar backend/target/task-manager-1.0.0.jar
+    healthCheckPath: /api/tasks
+    envVars:
+      - key: SERVER_PORT
+        value: 8080
+      - key: DB_URL
+        fromDatabase:
+          name: taskmanager-db
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: taskmanager-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: taskmanager-db
+          property: password
+      - key: FRONTEND_URL
+        value: https://task-manager-agentic-ai.vercel.app # Update this with your actual Vercel domain
+      - key: JAVA_OPTS
+        value: -Xmx512m
