@@ -5,12 +5,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   Container,
-  Grid,
   Box,
   TextField,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
   Typography,
   Alert,
   CircularProgress,
@@ -21,7 +20,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
-import { Task, TaskStatus } from '../types/Task';
+import type { Task, TaskStatus } from '../types/Task';
 import * as taskService from '../services/taskService';
 import TaskItem from './TaskItem';
 import TaskForm from './TaskForm';
@@ -283,18 +282,27 @@ export default function TaskList() {
             : 'No tasks yet. Create your first task!'}
         </Alert>
       ) : (
-        <Grid container spacing={3}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+            gap: 3,
+          }}
+        >
           {filteredAndSortedTasks.map((task) => (
-            <Grid item xs={12} sm={6} md={4} key={task.id}>
-              <TaskItem
-                task={task}
-                onEdit={handleOpenEditForm}
-                onDelete={handleDeleteTask}
-                onStatusChange={handleStatusChange}
-              />
-            </Grid>
+            <TaskItem
+              key={task.id}
+              task={task}
+              onEdit={handleOpenEditForm}
+              onDelete={handleDeleteTask}
+              onStatusChange={handleStatusChange}
+            />
           ))}
-        </Grid>
+        </Box>
       )}
 
       {/* Floating Action Button */}
