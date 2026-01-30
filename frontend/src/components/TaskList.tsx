@@ -201,11 +201,27 @@ export default function TaskList() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Typography variant="h4" component="h1" gutterBottom>
-        Task Manager
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            mb: 1,
+          }}
+        >
+          My Tasks
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Organize and track your tasks efficiently
+        </Typography>
+      </Box>
 
       {/* Filters and Search */}
       <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -218,6 +234,12 @@ export default function TaskList() {
             startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />,
           }}
           fullWidth
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'background.paper',
+            },
+          }}
         />
 
         {/* Filters Row */}

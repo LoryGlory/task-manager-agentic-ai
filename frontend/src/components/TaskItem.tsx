@@ -64,14 +64,17 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        border: isOverdue ? '2px solid' : 'none',
-        borderColor: isOverdue ? 'error.main' : 'transparent',
+        border: isOverdue ? '2px solid' : '1px solid',
+        borderColor: isOverdue ? 'error.main' : 'divider',
+        transition: 'all 0.2s ease-in-out',
         '&:hover': {
-          boxShadow: 6,
+          transform: 'translateY(-4px)',
+          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+          borderColor: isOverdue ? 'error.main' : 'primary.main',
         },
       }}
     >
-      <CardContent sx={{ flexGrow: 1 }}>
+      <CardContent sx={{ flexGrow: 1, p: 3 }}>
         {/* Header with Status and Actions */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Select
@@ -103,6 +106,8 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
           sx={{
             textDecoration: task.status === 'DONE' ? 'line-through' : 'none',
             color: task.status === 'DONE' ? 'text.secondary' : 'text.primary',
+            fontWeight: 600,
+            fontSize: '1.125rem',
           }}
         >
           {task.title}
