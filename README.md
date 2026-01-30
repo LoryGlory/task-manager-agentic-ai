@@ -310,7 +310,7 @@ task-manager-agentic-ai/
 │   │   │       └── application.properties
 │   │   └── test/                # Unit & integration tests
 │   └── pom.xml                  # Maven configuration
-├── frontend/                     # React frontend
+├── frontend/                    # React frontend
 │   ├── src/
 │   │   ├── components/          # React components
 │   │   ├── services/            # API services
