@@ -5,7 +5,6 @@
 import { useState, useEffect } from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
@@ -19,6 +18,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import type { Task, TaskStatus } from '../types/Task';
+import { StyledDialogTitle, FormContent, CharCounter } from './TaskForm.styles';
 
 interface TaskFormProps {
   open: boolean;
@@ -108,9 +108,9 @@ export default function TaskForm({ open, onClose, onSubmit, initialTask }: TaskF
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>{initialTask ? 'Edit Task' : 'Create New Task'}</DialogTitle>
+        <StyledDialogTitle>{initialTask ? 'Edit Task' : 'Create New Task'}</StyledDialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+          <FormContent>
             {/* Title Field */}
             <Box>
               <TextField
@@ -126,9 +126,9 @@ export default function TaskForm({ open, onClose, onSubmit, initialTask }: TaskF
                 fullWidth
                 autoFocus
               />
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+              <CharCounter>
                 {title.length}/{TITLE_MAX_LENGTH} characters
-              </Typography>
+              </CharCounter>
             </Box>
 
             {/* Description Field */}
@@ -146,9 +146,9 @@ export default function TaskForm({ open, onClose, onSubmit, initialTask }: TaskF
                 rows={4}
                 fullWidth
               />
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+              <CharCounter>
                 {description.length}/{DESCRIPTION_MAX_LENGTH} characters
-              </Typography>
+              </CharCounter>
             </Box>
 
             {/* Status Field */}
@@ -187,7 +187,7 @@ export default function TaskForm({ open, onClose, onSubmit, initialTask }: TaskF
                 },
               }}
             />
-          </Box>
+          </FormContent>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancel}>Cancel</Button>

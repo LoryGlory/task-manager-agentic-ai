@@ -6,7 +6,6 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   Container,
   Box,
-  TextField,
   MenuItem,
   Select,
   type SelectChangeEvent,
@@ -25,6 +24,15 @@ import * as taskService from '../services/taskService';
 import TaskItem from './TaskItem';
 import TaskForm from './TaskForm';
 import dayjs from 'dayjs';
+import {
+  HeaderBox,
+  GradientTitle,
+  FiltersContainer,
+  SearchField,
+  FiltersRow,
+  TasksGrid,
+  fabStyles,
+} from './TaskList.styles';
 
 type SortOption = 'status' | 'dueDate' | 'title';
 
@@ -203,47 +211,31 @@ export default function TaskList() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            mb: 1,
-          }}
-        >
-          My Tasks
-        </Typography>
+      <HeaderBox>
+        <GradientTitle>My Tasks</GradientTitle>
         <Typography variant="body2" color="text.secondary">
           Organize and track your tasks efficiently
         </Typography>
-      </Box>
+      </HeaderBox>
 
       {/* Filters and Search */}
-      <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <FiltersContainer>
         {/* Search */}
-        <TextField
+        <SearchField
           placeholder="Search tasks by title or description..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />,
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: <SearchIcon sx={{ mr: 1, color: 'action.active' }} />,
+            },
           }}
           fullWidth
           variant="outlined"
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              backgroundColor: 'background.paper',
-            },
-          }}
         />
 
         {/* Filters Row */}
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <FiltersRow>
           <FormControl sx={{ minWidth: 150 }}>
             <InputLabel>Status</InputLabel>
             <Select
@@ -288,8 +280,8 @@ export default function TaskList() {
               <MenuItem value="title">Title</MenuItem>
             </Select>
           </FormControl>
-        </Box>
-      </Box>
+        </FiltersRow>
+      </FiltersContainer>
 
       {/* Task Count */}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -304,17 +296,7 @@ export default function TaskList() {
             : 'No tasks yet. Create your first task!'}
         </Alert>
       ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, 1fr)',
-              md: 'repeat(3, 1fr)',
-            },
-            gap: 3,
-          }}
-        >
+        <TasksGrid>
           {filteredAndSortedTasks.map((task) => (
             <TaskItem
               key={task.id}
@@ -324,20 +306,11 @@ export default function TaskList() {
               onStatusChange={handleStatusChange}
             />
           ))}
-        </Box>
+        </TasksGrid>
       )}
 
       {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add task"
-        onClick={handleOpenCreateForm}
-        sx={{
-          position: 'fixed',
-          bottom: 32,
-          right: 32,
-        }}
-      >
+      <Fab color="primary" aria-label="add task" onClick={handleOpenCreateForm} sx={fabStyles}>
         <AddIcon />
       </Fab>
 

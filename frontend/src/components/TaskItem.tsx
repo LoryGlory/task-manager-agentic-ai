@@ -3,12 +3,10 @@
  * AI-generated component with Material UI and status management.
  */
 import {
-  Card,
   CardContent,
   Typography,
   Chip,
   IconButton,
-  Box,
   MenuItem,
   Select,
   type SelectChangeEvent,
@@ -19,6 +17,7 @@ import EventIcon from '@mui/icons-material/Event';
 import LabelIcon from '@mui/icons-material/Label';
 import dayjs from 'dayjs';
 import type { Task, TaskStatus } from '../types/Task';
+import { StyledCard, CardHeader, ActionsBox, selectStyles, titleStyles, MetadataBox } from './TaskItem.styles';
 
 interface TaskItemProps {
   task: Task;
@@ -59,57 +58,28 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
   };
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        border: isOverdue ? '2px solid' : '1px solid',
-        borderColor: isOverdue ? 'error.main' : 'divider',
-        transition: 'all 0.2s ease-in-out',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-          borderColor: isOverdue ? 'error.main' : 'primary.main',
-        },
-      }}
-    >
+    <StyledCard isOverdue={!!isOverdue}>
       <CardContent sx={{ flexGrow: 1, p: 3 }}>
         {/* Header with Status and Actions */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Select
-            value={task.status}
-            onChange={handleStatusChange}
-            size="small"
-            sx={{ minWidth: 140 }}
-          >
+        <CardHeader>
+          <Select value={task.status} onChange={handleStatusChange} size="small" sx={selectStyles}>
             <MenuItem value="TODO">To Do</MenuItem>
             <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
             <MenuItem value="DONE">Done</MenuItem>
           </Select>
 
-          <Box>
+          <ActionsBox>
             <IconButton size="small" onClick={handleEdit} color="primary" aria-label="edit task">
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton size="small" onClick={handleDelete} color="error" aria-label="delete task">
               <DeleteIcon fontSize="small" />
             </IconButton>
-          </Box>
-        </Box>
+          </ActionsBox>
+        </CardHeader>
 
         {/* Title */}
-        <Typography
-          variant="h6"
-          component="h3"
-          gutterBottom
-          sx={{
-            textDecoration: task.status === 'DONE' ? 'line-through' : 'none',
-            color: task.status === 'DONE' ? 'text.secondary' : 'text.primary',
-            fontWeight: 600,
-            fontSize: '1.125rem',
-          }}
-        >
+        <Typography variant="h6" component="h3" gutterBottom sx={titleStyles(task.status === 'DONE')}>
           {task.title}
         </Typography>
 
@@ -121,7 +91,7 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
         )}
 
         {/* Chips: Category and Due Date */}
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+        <MetadataBox>
           {/* Status Chip */}
           <Chip
             label={STATUS_LABELS[task.status]}
@@ -135,7 +105,7 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
               icon={<LabelIcon />}
               label={task.category}
               size="small"
-              variant="outlined"
+              variant="outlined" 
             />
           )}
 
@@ -149,7 +119,7 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
               variant={isOverdue ? 'filled' : 'outlined'}
             />
           )}
-        </Box>
+        </MetadataBox>
 
         {/* Overdue Warning */}
         {isOverdue && (
@@ -158,6 +128,6 @@ export default function TaskItem({ task, onEdit, onDelete, onStatusChange }: Tas
           </Typography>
         )}
       </CardContent>
-    </Card>
+    </StyledCard>
   );
 }
