@@ -298,7 +298,7 @@ This project was developed collaboratively with Claude (Anthropic's AI assistant
 
 ```
 task-manager-agentic-ai/
-├── backend/                      # Spring Boot backend
+├── backend/                     # Spring Boot backend
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/taskmanager/
