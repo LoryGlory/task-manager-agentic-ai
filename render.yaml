@@ -13,11 +13,11 @@ services:
   # Spring Boot Backend
   - type: web
     name: taskmanager-backend
-    env: java
+    runtime: docker
     plan: free
     region: oregon
-    buildCommand: cd backend && mvn clean package -DskipTests
-    startCommand: java -jar backend/target/task-manager-1.0.0.jar
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     healthCheckPath: /api/tasks
     autoDeploy: true
     envVars:
