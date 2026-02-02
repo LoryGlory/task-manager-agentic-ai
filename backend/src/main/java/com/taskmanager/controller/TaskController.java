@@ -16,7 +16,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = {"http://localhost:5173", "${FRONTEND_URL:http://localhost:5173}"})
+@CrossOrigin(
+    origins = {
+        "http://localhost:5173",
+        "https://task-manager-agentic-ai.vercel.app",
+        "${FRONTEND_URL:http://localhost:5173}"
+    },
+    originPatterns = {"https://*vercel.app"}
+)
 @RequiredArgsConstructor
 public class TaskController {
 
