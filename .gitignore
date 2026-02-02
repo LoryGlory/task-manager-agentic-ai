@@ -3,6 +3,8 @@
 backend/.env
 frontend/.env
 frontend/.env.local
+frontend/.env.production
+frontend/.env.production.local
 
 # Backend (Maven/Spring Boot)
 backend/target/

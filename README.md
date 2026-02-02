@@ -271,18 +271,136 @@ npm run build
 
 ## 🚀 Deployment
 
-### Backend Deployment (Render.com)
-1. Create PostgreSQL database on Render
-2. Create Web Service from GitHub repository
-3. Set environment variables (DB_URL, DB_USERNAME, DB_PASSWORD)
-4. Deploy
+This project is configured for easy deployment using:
+- **Render** (Backend + PostgreSQL Database) - Free tier available
+- **Vercel** (Frontend) - Free tier available
 
-### Frontend Deployment (Vercel)
-1. Connect GitHub repository to Vercel
-2. Set build command: `npm run build`
-3. Set output directory: `dist`
-4. Set environment variable: `VITE_API_URL=<backend-url>`
-5. Deploy
+### Prerequisites
+- GitHub account with repository pushed
+- Render account (free at [render.com](https://render.com))
+- Vercel account (free at [vercel.com](https://vercel.com))
+
+### Option 1: Automated Deployment with Render Blueprint (Recommended)
+
+The `render.yaml` file in the root directory enables one-click deployment of the backend and database.
+
+**Steps:**
+1. Push your code to GitHub
+2. Go to [Render Dashboard](https://dashboard.render.com)
+3. Click **"New"** → **"Blueprint"**
+4. Connect your GitHub repository
+5. Render will automatically:
+   - Create a PostgreSQL database
+   - Deploy the Spring Boot backend
+   - Configure all environment variables
+6. **Important**: After deployment, note your backend URL (e.g., `https://taskmanager-backend.onrender.com`)
+
+### Option 2: Manual Deployment
+
+#### Backend Deployment (Render.com)
+
+**1. Create PostgreSQL Database**
+- Go to Render Dashboard → **New** → **PostgreSQL**
+- Name: `taskmanager-db`
+- Database: `taskmanager`
+- User: `taskuser`
+- Region: Choose closest to you
+- Instance Type: **Free**
+- Click **Create Database**
+- Copy the **Internal Database URL** (starts with `postgresql://`)
+
+**2. Deploy Backend**
+- Go to Render Dashboard → **New** → **Web Service**
+- Connect your GitHub repository
+- Configure:
+  - **Name**: `taskmanager-backend`
+  - **Region**: Same as database
+  - **Branch**: `main`
+  - **Root Directory**: Leave empty
+  - **Runtime**: **Java**
+  - **Build Command**: `cd backend && mvn clean package -DskipTests`
+  - **Start Command**: `java -jar backend/target/task-manager-1.0.0.jar`
+  - **Instance Type**: **Free**
+
+**3. Set Environment Variables**
+- Add these environment variables in Render:
+  ```
+  DB_URL=<paste Internal Database URL from step 1>
+  DB_USERNAME=taskuser
+  DB_PASSWORD=<from database credentials>
+  FRONTEND_URL=https://your-app.vercel.app (update after deploying frontend)
+  SERVER_PORT=8080
+  JAVA_OPTS=-Xmx512m
+  ```
+- Click **Create Web Service**
+
+#### Frontend Deployment (Vercel)
+
+**1. Deploy to Vercel**
+- Go to [Vercel Dashboard](https://vercel.com/dashboard)
+- Click **Add New** → **Project**
+- Import your GitHub repository
+- Vercel will auto-detect Vite configuration from `vercel.json`
+- Configure:
+  - **Framework Preset**: Vite
+  - **Root Directory**: `./` (leave as is)
+  - **Build Command**: Auto-detected from `vercel.json`
+  - **Output Directory**: Auto-detected from `vercel.json`
+
+**2. Set Environment Variable**
+- In Vercel project settings → **Environment Variables**
+- Add:
+  ```
+  VITE_API_URL=https://taskmanager-backend.onrender.com/api
+  ```
+  (Replace with your actual Render backend URL)
+
+**3. Redeploy**
+- Trigger a redeployment to apply the environment variable
+- Your frontend will be available at `https://your-app.vercel.app`
+
+**4. Update Backend CORS**
+- Go back to Render backend service
+- Update `FRONTEND_URL` environment variable to your Vercel URL
+- Example: `https://your-app.vercel.app`
+- Render will automatically redeploy
+
+### Post-Deployment Verification
+
+1. **Test Backend**: Visit `https://taskmanager-backend.onrender.com/api/tasks`
+   - Should return `[]` (empty array) or your tasks
+2. **Test Frontend**: Visit your Vercel URL
+   - Create a test task
+   - Verify it saves and appears in the list
+3. **Check Logs**: Monitor Render and Vercel logs for any errors
+
+### Important Notes
+
+- **First Load**: Render's free tier spins down after inactivity. First request may take 30-60 seconds
+- **Database Backups**: Free PostgreSQL on Render has limited backups. Upgrade for production use
+- **Custom Domain**: Both Vercel and Render support custom domains on free tier
+- **Environment Variables**: Never commit `.env` files. Use platform-specific env var management
+
+### Troubleshooting Deployment
+
+**CORS Errors**
+- Ensure `FRONTEND_URL` on Render matches your exact Vercel URL (no trailing slash)
+- Check Render logs for CORS-related errors
+
+**Backend Not Responding**
+- Check Render logs for errors
+- Verify database connection string is correct
+- Ensure `SERVER_PORT=8080` is set
+
+**Frontend Shows Connection Error**
+- Verify `VITE_API_URL` in Vercel environment variables
+- Test backend URL directly in browser
+- Check that backend is running (not spun down)
+
+**Database Connection Failed**
+- Verify database credentials in Render environment variables
+- Check that database is in the same region as backend
+- Use the **Internal Database URL**, not external
 
 ## 🤖 AI Development Process
 

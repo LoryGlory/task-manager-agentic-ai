@@ -16,6 +16,12 @@ import {
   InputLabel,
   FormControl,
   Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -45,6 +51,10 @@ export default function TaskList() {
   // Form state
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
 
   // Filter and search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -162,18 +172,29 @@ export default function TaskList() {
     }
   };
 
-  const handleDeleteTask = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this task?')) {
-      return;
-    }
+  const handleDeleteTask = (id: number) => {
+    setTaskToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (taskToDelete === null) return;
 
     try {
-      await taskService.deleteTask(id);
+      await taskService.deleteTask(taskToDelete);
       await loadTasks();
       setSuccessMessage('Task deleted successfully');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete task');
+    } finally {
+      setDeleteDialogOpen(false);
+      setTaskToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setTaskToDelete(null);
   };
 
   // Form handlers
@@ -345,6 +366,29 @@ export default function TaskList() {
           {successMessage}
         </Alert>
       </Snackbar>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">Delete Task</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete this task? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="error" variant="contained" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
