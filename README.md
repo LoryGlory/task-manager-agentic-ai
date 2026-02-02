@@ -10,6 +10,7 @@ A modern, full-stack task management application built with Spring Boot and Reac
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" alt="Spring Boot" width="40" height="40"/>
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="PostgreSQL" width="40" height="40"/>
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/maven/maven-original.svg" alt="Maven" width="40" height="40"/>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="Docker" width="40" height="40"/>
 </p>
 
 - **Java 17+** - Programming language
@@ -18,6 +19,7 @@ A modern, full-stack task management application built with Spring Boot and Reac
 - **PostgreSQL** - Relational database
 - **Maven** - Build tool
 - **Lombok** - Code generation
+- **Docker** - Containerization (optional)
 
 ### Frontend
 <p align="left">
@@ -54,12 +56,22 @@ A modern, full-stack task management application built with Spring Boot and Reac
 
 ## 📋 Prerequisites
 
-### Required Software
+### Option 1: Traditional Setup
+
+**Required Software:**
 - **Java 17+** - [Download](https://adoptium.net/)
 - **Maven 3.8+** - [Download](https://maven.apache.org/download.cgi)
 - **PostgreSQL 16+** - [Download](https://www.postgresql.org/download/)
 - **Node.js 18+** - [Download](https://nodejs.org/)
 - **npm or yarn** - Comes with Node.js
+
+### Option 2: Docker Setup (Recommended for Quick Start)
+
+**Required Software:**
+- **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop)
+- Includes Docker and Docker Compose
+
+**With Docker, you don't need to install Java, Maven, PostgreSQL, or Node.js separately!**
 
 ### PostgreSQL Setup
 
@@ -147,6 +159,141 @@ npm run dev
 ```
 
 The frontend will start on `http://localhost:5173`
+
+## 🐳 Docker Setup (Alternative)
+
+### Quick Start with Docker
+
+If you prefer using Docker, you can run the entire stack with one command:
+
+#### Prerequisites
+- **Docker** - [Download](https://www.docker.com/products/docker-desktop)
+- **Docker Compose** - Usually included with Docker Desktop
+
+#### Using Docker Compose
+
+Create a `docker-compose.yml` in the root directory:
+
+```yaml
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: taskpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskuser -d taskmanager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-backend
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/taskmanager
+      DB_USERNAME: taskuser
+      DB_PASSWORD: taskpass
+      SERVER_PORT: 8080
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # React Frontend (for production)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskmanager-frontend
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+```
+
+#### Frontend Dockerfile
+
+Create `frontend/Dockerfile`:
+
+```dockerfile
+# Build stage
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### Run with Docker Compose
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes (fresh start)
+docker-compose down -v
+```
+
+#### Access the Application
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8080/api/tasks
+- Database: localhost:5432
+
+### Docker Commands Reference
+
+```bash
+# Build backend image
+docker build -t taskmanager-backend ./backend
+
+# Build frontend image
+docker build -t taskmanager-frontend ./frontend
+
+# Run backend only
+docker run -p 8080:8080 \
+  -e DB_URL=jdbc:postgresql://host.docker.internal:5432/taskmanager \
+  -e DB_USERNAME=taskuser \
+  -e DB_PASSWORD=taskpass \
+  taskmanager-backend
+
+# Clean up
+docker-compose down -v
+docker system prune -a
+```
 
 ## 🎯 Usage
 
